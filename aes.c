@@ -156,7 +156,7 @@ mul(int a, int b)
 
 // multiply a times column b
 
-#define MUL(a, b0, b1, b2, b3) mul(a, b0) | mul(a, b1) << 8 | mul(a, b2) << 16 | mul(a, b3) << 24
+#define MUL(a, b0, b1, b2, b3) (mul(a, b0) | mul(a, b1) << 8 | mul(a, b2) << 16 | mul(a, b3) << 24)
 
 // Initialize encryption and decryption tables
 
