@@ -164,7 +164,6 @@ void
 aes_init()
 {
 	int i, k;
-
 	for (i = 0; i < 256; i++) {
 		k = sbox[i];
 		etab0[i] = MUL(k, 2, 1, 1, 3);
