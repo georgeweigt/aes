@@ -26,22 +26,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <stdio.h>
 #include <stdint.h>
-#include <string.h>
-
-void aes_init();
-void test_aes128(void);
-void test_aes256(void);
-void hextobin(uint8_t *buf, int len, char *str);
-
-int
-main(int argc, char *argv[])
-{
-	aes_init();
-	test_aes128();
-	test_aes256();
-}
 
 #define s03 (s0 >> 24)
 #define s02 (s0 >> 16 & 0xff)
@@ -85,21 +70,21 @@ main(int argc, char *argv[])
 
 // encryption tables
 
-uint32_t etab0[256];
-uint32_t etab1[256];
-uint32_t etab2[256];
-uint32_t etab3[256];
+static uint32_t etab0[256];
+static uint32_t etab1[256];
+static uint32_t etab2[256];
+static uint32_t etab3[256];
 
 // decryption tables
 
-uint32_t dtab0[256];
-uint32_t dtab1[256];
-uint32_t dtab2[256];
-uint32_t dtab3[256];
+static uint32_t dtab0[256];
+static uint32_t dtab1[256];
+static uint32_t dtab2[256];
+static uint32_t dtab3[256];
 
-uint32_t rcon[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36};
+static uint32_t rcon[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36};
 
-uint8_t sbox[256] = {
+static uint8_t sbox[256] = {
 0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,
 0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,
 0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15,
@@ -118,7 +103,7 @@ uint8_t sbox[256] = {
 0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16,
 };
 
-uint8_t inv_sbox[256] = {
+static uint8_t inv_sbox[256] = {
 0x52,0x09,0x6a,0xd5,0x30,0x36,0xa5,0x38,0xbf,0x40,0xa3,0x9e,0x81,0xf3,0xd7,0xfb,
 0x7c,0xe3,0x39,0x82,0x9b,0x2f,0xff,0x87,0x34,0x8e,0x43,0x44,0xc4,0xde,0xe9,0xcb,
 0x54,0x7b,0x94,0x32,0xa6,0xc2,0x23,0x3d,0xee,0x4c,0x95,0x0b,0x42,0xfa,0xc3,0x4e,
@@ -139,7 +124,7 @@ uint8_t inv_sbox[256] = {
 
 // multiply a and b mod x^8 + x^4 + x^3 + x + 1 (see FIPS Pub 197, p. 10)
 
-int
+static int
 mul(int a, int b)
 {
 	int i, t = 0;
@@ -161,7 +146,7 @@ mul(int a, int b)
 // Initialize encryption and decryption tables
 
 void
-aes_init()
+aes_init(void)
 {
 	int i, k;
 	for (i = 0; i < 256; i++) {
@@ -179,8 +164,8 @@ aes_init()
 }
 
 // key	16 bytes
-// w	44 uint32
-// v	44 uint32
+// w	44 uint32_t
+// v	44 uint32_t
 
 void
 aes128_expand_key(uint8_t *key, uint32_t *w, uint32_t *v)
@@ -219,7 +204,7 @@ aes128_expand_key(uint8_t *key, uint32_t *w, uint32_t *v)
 
 // encrypt one block (16 bytes)
 
-// w	44 uint32
+// w	44 uint32_t
 // in	16 bytes
 // out	16 bytes
 
@@ -285,7 +270,7 @@ aes128_encrypt_block(uint32_t *w, uint8_t *in, uint8_t *out)
 
 // decrypt one block (16 bytes)
 
-// v	44 uint32
+// v	44 uint32_t
 // in	16 bytes
 // out	16 bytes
 
@@ -350,8 +335,8 @@ aes128_decrypt_block(uint32_t *v, uint8_t *in, uint8_t *out)
 }
 
 // key	32 bytes
-// w	60 uint32
-// v	60 uint32
+// w	60 uint32_t
+// v	60 uint32_t
 
 void
 aes256_expand_key(uint8_t *key, uint32_t *w, uint32_t *v)
@@ -397,7 +382,7 @@ aes256_expand_key(uint8_t *key, uint32_t *w, uint32_t *v)
 
 // encrypt one block (16 bytes)
 
-// w	60 uint32
+// w	60 uint32_t
 // in	16 bytes
 // out	16 bytes
 
@@ -463,7 +448,7 @@ aes256_encrypt_block(uint32_t *w, uint8_t *in, uint8_t *out)
 
 // decrypt one block (16 bytes)
 
-// v	60 uint32
+// v	60 uint32_t
 // in	16 bytes
 // out	16 bytes
 
@@ -525,100 +510,4 @@ aes256_decrypt_block(uint32_t *v, uint8_t *in, uint8_t *out)
 	out[13] = s3 >> 8;
 	out[14] = s3 >> 16;
 	out[15] = s3 >> 24;
-}
-
-#define KEY1 "000102030405060708090a0b0c0d0e0f"
-#define PLAIN1 "00112233445566778899aabbccddeeff"
-#define CIPHER1 "69c4e0d86a7b0430d8cdb78070b4c55a"
-
-void
-test_aes128(void)
-{
-	int err;
-	uint8_t k[16], p[16], c[16], out[16];
-	uint32_t w[44], v[44];
-
-	printf("Testing AES-128\n");
-
-	hextobin(k, 16, KEY1);
-	hextobin(p, 16, PLAIN1);
-	hextobin(c, 16, CIPHER1);
-
-	aes128_expand_key(k, w, v);
-
-	aes128_encrypt_block(w, p, out);
-
-	err = memcmp(c, out, 16);
-
-	if (err) {
-		printf("encryption fail\n");
-		return;
-	}
-
-	aes128_decrypt_block(v, out, out);
-
-	err = memcmp(p, out, 16);
-
-	if (err) {
-		printf("decryption fail\n");
-		return;
-	}
-
-	printf("pass\n");
-}
-
-#define KEY2 "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
-#define PLAIN2 "00112233445566778899aabbccddeeff"
-#define CIPHER2 "8ea2b7ca516745bfeafc49904b496089"
-
-void
-test_aes256(void)
-{
-	int err;
-	uint8_t k[32], p[16], c[16], out[16];
-	uint32_t w[60], v[60];
-
-	printf("Testing AES-256\n");
-
-	hextobin(k, 32, KEY2);
-	hextobin(p, 16, PLAIN2);
-	hextobin(c, 16, CIPHER2);
-
-	aes256_expand_key(k, w, v);
-
-	aes256_encrypt_block(w, p, out);
-
-	err = memcmp(c, out, 16);
-
-	if (err) {
-		printf("encryption fail\n");
-		return;
-	}
-
-	aes256_decrypt_block(v, out, out);
-
-	err = memcmp(p, out, 16);
-
-	if (err) {
-		printf("decryption fail\n");
-		return;
-	}
-
-	printf("pass\n");
-}
-
-void
-hextobin(uint8_t *buf, int len, char *str)
-{
-	int d, i, n;
-
-	n = strlen(str) / 2;
-
-	if (n > len)
-		n = len;
-
-	for (i = 0; i < n; i++) {
-		sscanf(str + 2 * i, "%2x", &d);
-		buf[i] = d;
-	}
 }

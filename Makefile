@@ -1,2 +1,2 @@
-aes: aes.c
-	$(CC) -Wall -O0 -o aes aes.c
+demo: main.c aes.c
+	$(CC) -Wall -O0 -o demo main.c aes.c
