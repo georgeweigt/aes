@@ -171,7 +171,7 @@ void
 aes128_expand_key(uint8_t *key, uint32_t *w, uint32_t *v)
 {
 	int i;
-	uint32_t temp;
+	uint32_t t;
 
 	w[0] = key[3] << 24 | key[2] << 16 | key[1] << 8 | key[0];
 	w[1] = key[7] << 24 | key[6] << 16 | key[5] << 8 | key[4];
@@ -180,12 +180,12 @@ aes128_expand_key(uint8_t *key, uint32_t *w, uint32_t *v)
 
 	for (i = 4; i < 44; i++) {
 
-		temp = w[i - 1];
+		t = w[i - 1];
 
 		if (i % 4 == 0)
-			temp = ((etab2[temp >> 8 & 0xff] & 0xff) | (etab3[temp >> 16 & 0xff] & 0xff00) | (etab0[temp >> 24] & 0xff0000) | (etab1[temp & 0xff] & 0xff000000)) ^ rcon[i / 4 - 1];
+			t = ((etab2[t >> 8 & 0xff] & 0xff) | (etab3[t >> 16 & 0xff] & 0xff00) | (etab0[t >> 24] & 0xff0000) | (etab1[t & 0xff] & 0xff000000)) ^ rcon[i / 4 - 1];
 
-		w[i] = w[i - 4] ^ temp;
+		w[i] = w[i - 4] ^ t;
 	}
 
 	v[0] = w[0];
@@ -342,7 +342,7 @@ void
 aes256_expand_key(uint8_t *key, uint32_t *w, uint32_t *v)
 {
 	int i;
-	uint32_t temp;
+	uint32_t t;
 
 	w[0] = key[3] << 24 | key[2] << 16 | key[1] << 8 | key[0];
 	w[1] = key[7] << 24 | key[6] << 16 | key[5] << 8 | key[4];
@@ -356,14 +356,14 @@ aes256_expand_key(uint8_t *key, uint32_t *w, uint32_t *v)
 
 	for (i = 8; i < 60; i++) {
 
-		temp = w[i - 1];
+		t = w[i - 1];
 
 		if (i % 8 == 0)
-			temp = ((etab2[temp >> 8 & 0xff] & 0xff) | (etab3[temp >> 16 & 0xff] & 0xff00) | (etab0[temp >> 24] & 0xff0000) | (etab1[temp & 0xff] & 0xff000000)) ^ rcon[i / 8 - 1];
+			t = ((etab2[t >> 8 & 0xff] & 0xff) | (etab3[t >> 16 & 0xff] & 0xff00) | (etab0[t >> 24] & 0xff0000) | (etab1[t & 0xff] & 0xff000000)) ^ rcon[i / 8 - 1];
 		else if (i % 8 == 4)
-			temp = (sbox[temp >> 24] << 24) | (sbox[temp >> 16 & 0xff] << 16) | (sbox[temp >> 8 & 0xff] << 8) | sbox[temp & 0xff];
+			t = (sbox[t >> 24] << 24) | (sbox[t >> 16 & 0xff] << 16) | (sbox[t >> 8 & 0xff] << 8) | sbox[t & 0xff];
 
-		w[i] = w[i - 8] ^ temp;
+		w[i] = w[i - 8] ^ t;
 	}
 
 	v[0] = w[0];
